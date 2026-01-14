@@ -31,47 +31,59 @@ namespace GameProgII_HealthRevisited_ZanderG
             private set { _maxHealth = value; }
         }
 
-        public void TakeDamage(int damage)
+        public void TakeDamage(float damage)
         {
             if (damage < 0)
             {
+                damage = 0;
                 Console.WriteLine("ERROR! Damage is a negative number, health will not change.");
             }
             else
             {
-                _currentHealth -= damage;
+                CurrentHealth -= damage;
+
+                if(CurrentHealth <= 0)
+                {
+                    CurrentHealth = 0;
+                }
             }
         }
 
         public void Restore()
         {
-            _currentHealth = _maxHealth;
+            CurrentHealth = MaxHealth;
         }
 
-        public void Heal(int heal)
+        public void Heal(float healAmount)
         {
-            if(heal < 0)
+            if(healAmount < 0)
             {
+                healAmount = 0;
                 Console.WriteLine("ERROR! Heal is a negative numver, health will not change");
             }
             else
             {
-                _currentHealth += heal;
+                CurrentHealth += healAmount;
+
+                if(CurrentHealth > MaxHealth)
+                {
+                    CurrentHealth = MaxHealth;
+                }
             }
         }
 
         public Health(int maxHealth)
         {
-            _maxHealth = maxHealth;
-            _currentHealth = maxHealth;
+            MaxHealth = maxHealth;
+            CurrentHealth = maxHealth;
         }
     }
 
     class Player
     {
         string _name;
-        public Health health;
-        public Health shield;
+        public Health _health;
+        public Health _shield;
 
         public string Name
         {
@@ -81,24 +93,24 @@ namespace GameProgII_HealthRevisited_ZanderG
 
         public Health Health
         {
-            get { return health; }
-            private set { health = value; }
+            get { return _health; }
+            private set { _health = value; }
         }
 
         public Health Shield
         {
-            get { return shield; }
-            private set { shield = value; }
+            get { return _shield; }
+            private set { _shield = value; }
         }
 
         public void TakeDamage(int damage)
         {
-
+            
         }
 
         public string GetStatusString()
         {
-            //if(health == 100)
+            if(Health.CurrentHealth == 100)
             {
 
             }
