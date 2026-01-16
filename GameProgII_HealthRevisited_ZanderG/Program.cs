@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,29 +10,72 @@ namespace GameProgII_HealthRevisited_ZanderG
 {
     internal class Program
     {
+        static bool isPlaying = true;
+
         static void Main(string[] args)
         {
+
+            Health health = new Health(100);
+            Health shield = new Health(100);
+
+            
+            Random random = new Random();
+            
+            Console.WriteLine("Please type your name");
+            string userName = Console.ReadLine();
+
+            Player player = new Player(userName, 100, 100);
+            Console.Clear();
+
+            while (isPlaying)
+            {
+                player.ShowHUD();
+                
+                if (player.Health.CurrentHealth <= 0)
+                {
+                    isPlaying = false;
+                    Console.WriteLine("You are dead, press any button to quit");
+                }
+                else
+                {
+                    Console.WriteLine("Press D key to take damage or H key to heal");
+                }
+
+                
+                ConsoleKeyInfo playerInput = Console.ReadKey(true);
+
+                if (playerInput.Key == ConsoleKey.D)
+                {
+                    player.TakeDamage(random.Next(1, 21));
+                }
+                if (playerInput.Key == ConsoleKey.H)
+                {
+                    player.Health.Heal(random.Next(1, 21));
+                }
+                Console.Clear();
+            }        
         }
     }
 
     class Health
     {
-        float _currentHealth;
-        float _maxHealth;
+        public int _currentHealth;
+        public int _maxHealth;
 
-        public float CurrentHealth
+
+        public int CurrentHealth
         {
             get { return _currentHealth; }
             private set { _currentHealth = value; }
         }
 
-        public float MaxHealth
+        public int MaxHealth
         {
             get { return _maxHealth; }
             private set { _maxHealth = value; }
         }
 
-        public void TakeDamage(float damage)
+        public void TakeDamage(int damage)
         {
             if (damage < 0)
             {
@@ -54,12 +98,12 @@ namespace GameProgII_HealthRevisited_ZanderG
             CurrentHealth = MaxHealth;
         }
 
-        public void Heal(float healAmount)
+        public void Heal(int healAmount)
         {
             if(healAmount < 0)
             {
                 healAmount = 0;
-                Console.WriteLine("ERROR! Heal is a negative numver, health will not change");
+                Console.WriteLine("ERROR! Heal is a negative number, health will not change");
             }
             else
             {
@@ -77,13 +121,25 @@ namespace GameProgII_HealthRevisited_ZanderG
             MaxHealth = maxHealth;
             CurrentHealth = maxHealth;
         }
+
+        
     }
 
     class Player
     {
         string _name;
-        public Health _health;
-        public Health _shield;
+
+
+        public Health Health = new Health(100);
+        public Health Shield = new Health(100);
+
+        public Player(string name, int maxHealth, int maxShield)
+        {
+            _name = name;
+            Health._maxHealth = maxHealth;
+            Shield._maxHealth = maxShield;
+
+        }
 
         public string Name
         {
@@ -91,34 +147,30 @@ namespace GameProgII_HealthRevisited_ZanderG
             set { _name = value; }
         }
 
-        public Health Health
+        
+        public Health _health
         {
             get { return _health; }
             private set { _health = value; }
         }
+        
 
-        public Health Shield
+        public Health _shield
         {
             get { return _shield; }
             private set { _shield = value; }
         }
 
-        public void TakeDamage(float damage)
+       
+        public void TakeDamage(int damage)
         {
-            if(damage > Shield.CurrentHealth)
-            {
-                float overflowDamage = damage - Shield.CurrentHealth;
+            int overflowDamage = damage - Shield.CurrentHealth;
 
-                Shield.TakeDamage(damage);
+            Shield.TakeDamage(damage);
 
-                if(overflowDamage > 0)
-                {
-                    Health.TakeDamage(overflowDamage);
-                }
-            }
-            else
+            if (overflowDamage > 0)
             {
-                Health.TakeDamage(damage);
+                Health.TakeDamage(overflowDamage);
             }
         }
 
@@ -150,11 +202,12 @@ namespace GameProgII_HealthRevisited_ZanderG
             }
         }
 
-        public Player(string name, int maxHealth, int maxShield)
+        public void ShowHUD()
         {
-            _name = name;
-            //Health = maxHealth;
-
+            Console.WriteLine($"Player: {Name}");
+            Console.WriteLine($"Health: {Health.CurrentHealth}");
+            Console.WriteLine($"Shield: {Shield.CurrentHealth}");
+            Console.WriteLine($"Status: {GetStatusString()}");
         }
     }
 }
