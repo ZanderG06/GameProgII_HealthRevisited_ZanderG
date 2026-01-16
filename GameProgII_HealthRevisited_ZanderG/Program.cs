@@ -103,19 +103,58 @@ namespace GameProgII_HealthRevisited_ZanderG
             private set { _shield = value; }
         }
 
-        public void TakeDamage(int damage)
+        public void TakeDamage(float damage)
         {
-            
+            if(damage > Shield.CurrentHealth)
+            {
+                float overflowDamage = damage - Shield.CurrentHealth;
+
+                Shield.TakeDamage(damage);
+
+                if(overflowDamage > 0)
+                {
+                    Health.TakeDamage(overflowDamage);
+                }
+            }
+            else
+            {
+                Health.TakeDamage(damage);
+            }
         }
 
         public string GetStatusString()
         {
             if(Health.CurrentHealth == 100)
             {
-
+                return "Health Perfect";
             }
-            
-            return "";
+            else if(Health.CurrentHealth <= 99 && Health.CurrentHealth >= 76)
+            {
+                return "Health Good";
+            }
+            else if(Health.CurrentHealth <= 75 && Health.CurrentHealth >= 51)
+            {
+                return "Health Ok";
+            }
+            else if(Health.CurrentHealth <= 50 && Health.CurrentHealth >= 26)
+            {
+                return "Health Low";
+            }
+            else if(Health.CurrentHealth <= 25 && Health.CurrentHealth >= 1)
+            {
+                return "Bro Heal Up!";
+            }
+            else
+            {
+                return "Dead";
+            }
+        }
+
+        public Player(string name, int maxHealth, int maxShield)
+        {
+            _name = name;
+            //Health = maxHealth;
+
         }
     }
 }
